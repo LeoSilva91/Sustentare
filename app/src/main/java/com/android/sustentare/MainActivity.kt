@@ -18,9 +18,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             SustentareTheme {
                 Scaffold(Modifier.fillMaxSize()) { innerPadding ->
+                    // Chamada da função SustentareNavigation
+                    // Adicionada navegação entre telas de autenticação (login) e as telas de tópicos e desafios
                     SustentareNavigation(
                         Modifier.padding(innerPadding),
                         authViewModel = authViewModel

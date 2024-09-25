@@ -79,4 +79,11 @@ dependencies {
     // ViewModel utilities for Compose and Lifecycle utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.5")
+    //rochester
+    implementation("androidx.compose.ui:ui:1.5.1")
+    implementation("androidx.compose.material:material:1.5.1")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.1")
+    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.activity:activity-compose:1.7.2")
+    //fim
 }
