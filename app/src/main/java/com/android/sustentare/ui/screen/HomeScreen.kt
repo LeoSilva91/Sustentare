@@ -1,3 +1,4 @@
+
 package com.android.sustentare.ui.screen
 
 import androidx.compose.foundation.background
@@ -23,7 +24,7 @@ import com.android.sustentare.ui.theme.latoFontFamily
 import com.android.sustentare.ui.viewmodel.AuthViewModel
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier,navController: NavController, authViewModel: AuthViewModel) {
+fun HomeScreen(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
 
     Column(
         modifier = Modifier
@@ -41,8 +42,18 @@ fun HomeScreen(modifier: Modifier = Modifier,navController: NavController, authV
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 10.dp)
                 .align(Alignment.Start)
-                .offset(x = 125.dp, y = 10.dp)
         )
+
+        // Trocar o botão de desafios pelo botão de educação
+        Button(
+            onClick = {
+                navController.navigate("educational") // Navegando para a tela de educação
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(containerColor = GreenHigh)
+        ) {
+            Text(text = "Educação", color = Color.White) // Texto do botão atualizado
+        }
 
         Button(
             onClick = {

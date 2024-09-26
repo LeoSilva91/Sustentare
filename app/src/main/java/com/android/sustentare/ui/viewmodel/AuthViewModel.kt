@@ -1,3 +1,4 @@
+
 package com.android.sustentare.ui.viewmodel
 
 import android.os.Handler
@@ -47,7 +48,7 @@ class AuthViewModel : ViewModel() {
                         AuthStates.Error(task.exception?.message ?: "Algo deu errado no seu login")
                 }
             }
-        }
+    }
 
     fun checkSignup(email: String, password: String, confirmPassword: String) {
         if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
@@ -108,11 +109,11 @@ class AuthViewModel : ViewModel() {
     }
 }
 
-    sealed class AuthStates {
-        data object Loading : AuthStates()
-        data object Authenticated : AuthStates()
-        data object Unauthenticated : AuthStates()
-        data object SignupSuccess : AuthStates()
-        data class Error(val message: String) : AuthStates()
+sealed class AuthStates {
+    data object Loading : AuthStates()
+    data object Authenticated : AuthStates()
+    data object Unauthenticated : AuthStates()
+    data object SignupSuccess : AuthStates()
+    data class Error(val message: String) : AuthStates()
 
-    }
+}

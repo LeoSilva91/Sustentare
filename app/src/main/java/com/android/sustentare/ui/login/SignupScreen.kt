@@ -198,8 +198,8 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavController, au
                     authViewModel.checkSignup(email, password, confirmPassword)
                 },
                     colors = ButtonDefaults.buttonColors(
-                    containerColor = GreenHigh
-                )) {
+                        containerColor = GreenHigh
+                    )) {
                     Text(
                         text = "Criar Conta",
                         color = Color.White,
