@@ -1,98 +1,304 @@
 package com.android.sustentare
 
-import androidx.compose.foundation.border
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.android.sustentare.ui.theme.GreenHigh
 import kotlinx.coroutines.launch
 
 @Composable
-fun DesafioScreen(navController: NavController, topico: Topico) {
-    // Estado para armazenar a descrição do desafio
-    var descricao by remember { mutableStateOf("") }
-    // Estado para controlar se uma imagem foi anexada ou não
-    var imagemAnexada by remember { mutableStateOf(false) }
+fun DesafioScreen(
+    navController: NavController,
+    topicoId: Int,
+    topicoTitulo: String
+) {
+    val firestore = FirebaseFirestore.getInstance()
+    val storage = FirebaseStorage.getInstance()
+    val auth = FirebaseAuth.getInstance()
+    val currentUser = auth.currentUser
+    val uid = currentUser?.uid
 
-    // Lida com o estado do Scaffold (para mostrar a Snackbar)
-    val scaffoldState = rememberScaffoldState()
-    // Scope para lidar com operações assíncronas como mostrar a Snackbar
+    var descricao by remember { mutableStateOf("") }
+    var mediaUri by remember { mutableStateOf<Uri?>(null) }
+    var mediaUrl by remember { mutableStateOf<String?>(null) }
+    var concluido by remember { mutableStateOf(false) }
+    var erroCarregamento by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Scaffold define a estrutura da tela com barra superior, corpo e outros componentes
-    Scaffold(
-        scaffoldState = scaffoldState, // Passa o estado do Scaffold
-        topBar = {
-            // Barra de topo com o título do tópico e o botão de voltar
-            TopAppBar(
-                title = { Text(topico.titulo) }, // Exibe o título do tópico
-                navigationIcon = {
-                    // Ícone para voltar à lista de tópicos
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar") // Ícone de seta para voltar
-                    }
-                }
-            )
-        },
-        content = {
-            // Corpo da tela do desafio, permite preencher a descrição e anexar uma imagem
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text("Descrição:") // Texto indicando o campo de descrição
-                // Campo de texto para o usuário escrever a descrição do desafio
-                BasicTextField(
-                    value = descricao,
-                    onValueChange = { descricao = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .border(1.dp, Color.Gray) // Borda cinza para o campo de texto
-                        .padding(8.dp)
-                )
-
-                // Botão para anexar imagem (a funcionalidade real de seleção de imagem pode ser adicionada depois)
-                Button(
-                    onClick = { imagemAnexada = true }, // Atualiza o estado ao anexar uma imagem
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Texto no botão muda de acordo com o estado
-                    Text(if (imagemAnexada) "Imagem Anexada" else "Anexar Imagem")
-                }
-
-                Spacer(modifier = Modifier.weight(1f)) // Espaçamento flexível para empurrar o botão para o final
-
-                // Botão para salvar o desafio
-                Button(
-                    onClick = {
-                        // Verifica se a descrição não está vazia e se uma imagem foi anexada
-                        if (descricao.isNotBlank() && imagemAnexada) {
-                            topico.concluido = true // Marca o desafio como concluído
-                            navController.popBackStack() // Volta para a lista de tópicos
-                        } else {
-                            // Mostra uma Snackbar com uma mensagem de erro
-                            coroutineScope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    message = "Por favor, preencha a descrição e anexe uma imagem."
-                                )
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green), // Botão com fundo verde
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Salvar", color = Color.White) // Texto do botão de salvar
-                }
+    // Launcher para selecionar mídia da galeria
+    val mediaPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            if (uri != null) {
+                mediaUri = uri
+                Log.d("FirebaseStorage", "URI selecionado: $uri") // Log para verificar URI
+            } else {
+                Log.e("MediaPicker", "Nenhuma mídia foi selecionada")
             }
         }
     )
+
+    // Carregar dados do Firestore ao inicializar a tela
+    LaunchedEffect(Unit) {
+        uid?.let { userId ->
+            firestore.collection("usuarios").document(userId).collection("desafios")
+                .document(topicoId.toString())
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        descricao = document.getString("descricao") ?: ""
+                        concluido = document.getBoolean("concluido") ?: false
+                        mediaUrl = document.getString("mediaUrl")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    erroCarregamento = exception.message
+                }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
+    ) {
+        // Barra de título com a seta de voltar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(GreenHigh, CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Voltar",
+                    tint = Color.White
+                )
+            }
+
+            Text(
+                text = topicoTitulo,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .weight(1f),
+                maxLines = 1
+            )
+        }
+
+        // Campo de texto para editar a descrição do desafio
+        OutlinedTextField(
+            value = descricao,
+            onValueChange = { descricao = it },
+            label = { Text("Descrição do desafio") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
+
+        // Mostrar mídia previamente anexada, se houver
+        mediaUrl?.let { url ->
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Exibir imagem ou vídeo usando Coil
+            AsyncImage(
+                model = url,
+                contentDescription = "Mídia Anexada",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(Color.Gray)
+            )
+        }
+
+        // Botão para selecionar uma nova mídia (foto ou vídeo)
+        Button(
+            onClick = { mediaPickerLauncher.launch("image/* video/*") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        ) {
+            Text("Selecionar Foto ou Vídeo")
+        }
+
+        // Mostrar miniatura da nova mídia, se houver
+        mediaUri?.let { uri ->
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Exibir imagem usando Coil
+            AsyncImage(
+                model = uri,
+                contentDescription = "Mídia Selecionada",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(Color.Gray)
+            )
+        }
+
+        // Botão "Salvar" - só habilitado se o campo de descrição não estiver vazio
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    uid?.let { userId ->
+                        mediaUri?.let { uri ->
+                            // Criando a referência do Storage usando o bucket correto
+                            val storageRef = storage.getReferenceFromUrl("gs://sustaingreen-62e9e.appspot.com")
+                            val fileRef = storageRef.child("usuarios/$userId/desafios/$topicoId/media_${System.currentTimeMillis()}")
+
+                            // Log para verificar URI antes de fazer upload
+                            Log.d("FirebaseStorage", "Fazendo upload de mídia do URI: $uri")
+
+                            val uploadTask = fileRef.putFile(uri)
+
+                            uploadTask
+                                .addOnSuccessListener {
+                                    fileRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                                        firestore.collection("usuarios").document(userId).collection("desafios")
+                                            .document(topicoId.toString())
+                                            .set(
+                                                mapOf(
+                                                    "id" to topicoId,
+                                                    "titulo" to topicoTitulo,
+                                                    "descricao" to descricao,
+                                                    "concluido" to true,
+                                                    "usuarioId" to userId,
+                                                    "mediaUrl" to downloadUri.toString()
+                                                )
+                                            )
+                                            .addOnSuccessListener {
+                                                erroCarregamento = null
+                                                concluido = true
+                                                navController.popBackStack() // Voltar para a lista de tópicos
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                erroCarregamento = "Erro ao salvar: ${exception.message}"
+                                            }
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    erroCarregamento = "Erro ao fazer upload da mídia: ${exception.message}"
+                                    Log.e("FirebaseStorage", "Erro ao fazer upload: ${exception.message}")
+                                }
+                        } ?: run {
+                            // Se não houver mídia nova, apenas salvar a descrição
+                            firestore.collection("usuarios").document(userId).collection("desafios")
+                                .document(topicoId.toString())
+                                .set(
+                                    mapOf(
+                                        "id" to topicoId,
+                                        "titulo" to topicoTitulo,
+                                        "descricao" to descricao,
+                                        "concluido" to true,
+                                        "usuarioId" to userId,
+                                        "mediaUrl" to (mediaUrl ?: "")
+                                    )
+                                )
+                                .addOnSuccessListener {
+                                    erroCarregamento = null
+                                    concluido = true
+                                    navController.popBackStack() // Voltar para a lista de tópicos
+                                }
+                                .addOnFailureListener { exception ->
+                                    erroCarregamento = "Erro ao salvar: ${exception.message}"
+                                }
+                        }
+                    } ?: run {
+                        erroCarregamento = "Usuário não autenticado."
+                        Log.e("FirebaseAuth", "Usuário não autenticado.")
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = GreenHigh),
+            enabled = descricao.isNotBlank()
+        ) {
+            Text("Salvar", color = Color.White)
+        }
+
+        // Botão "Deletar Resposta" - atualizado para também deletar a mídia
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    uid?.let { userId ->
+                        // Primeiro, deletar a mídia do Storage, se existir
+                        mediaUrl?.let { url ->
+                            val storageRef = storage.getReferenceFromUrl(url)
+                            storageRef.delete()
+                                .addOnSuccessListener {
+                                    Log.d("FirebaseStorage", "Mídia deletada com sucesso.")
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e("FirebaseStorage", "Erro ao deletar mídia: ${exception.message}")
+                                }
+                        }
+
+                        // Depois, deletar o documento do Firestore
+                        firestore.collection("usuarios").document(userId).collection("desafios")
+                            .document(topicoId.toString())
+                            .delete()
+                            .addOnSuccessListener {
+                                erroCarregamento = null
+                                concluido = false
+                                mediaUri = null
+                                mediaUrl = null
+                                navController.popBackStack()
+                            }
+                            .addOnFailureListener { exception ->
+                                erroCarregamento = "Erro ao deletar: ${exception.message}"
+                                Log.e("FirebaseFirestore", "Erro ao deletar no Firestore: ${exception.message}")
+                            }
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = if (concluido) Color.Red else Color.Gray),
+            enabled = concluido
+        ) {
+            Text("Deletar Resposta", color = Color.White)
+        }
+
+        // Mostrar erro se houver problema ao salvar, deletar ou carregar
+        if (erroCarregamento != null) {
+            Text(
+                text = "Erro: ${erroCarregamento}",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+    }
 }

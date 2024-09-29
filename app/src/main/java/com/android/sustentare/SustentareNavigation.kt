@@ -3,9 +3,11 @@ package com.android.sustentare
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.android.sustentare.ui.login.LoginScreen
 import com.android.sustentare.ui.login.SignupScreen
 import com.android.sustentare.ui.screen.HomeScreen
@@ -40,20 +42,25 @@ fun SustentareNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewM
             HomeScreen(modifier = modifier, navController = navController, authViewModel = authViewModel)
         }
 
-        // --- Adições relacionadas aos tópicos e desafios ---
-
         // Tela de Lista de Tópicos - adicionada à navegação após login
         composable("listaTopicos") {
             ListaTopicosScreen(navController = navController)
         }
 
-        // Tela de Detalhe de Desafio - permite ver o detalhe do tópico e anexar imagem
-        composable("desafio/{topicoId}") { backStackEntry ->
-            val topicoId = backStackEntry.arguments?.getString("topicoId")?.toInt() ?: 0
-            val topico = topicos.find { it.id == topicoId }
-            if (topico != null) {
-                DesafioScreen(navController = navController, topico = topico)
-            }
+        // Tela de Detalhe de Desafio - permite ver o detalhe do tópico e anexar descrição
+        composable(
+            route = "desafio/{topicoId}/{topicoTitulo}",
+            arguments = listOf(
+                navArgument("topicoId") { type = NavType.IntType },
+                navArgument("topicoTitulo") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            // Extraindo os argumentos usando backStackEntry
+            val topicoId = backStackEntry.arguments?.getInt("topicoId") ?: 0
+            val topicoTitulo = backStackEntry.arguments?.getString("topicoTitulo") ?: ""
+
+            // Navegando para DesafioScreen com os parâmetros extraídos
+            DesafioScreen(navController = navController, topicoId = topicoId, topicoTitulo = topicoTitulo)
         }
     }
 }

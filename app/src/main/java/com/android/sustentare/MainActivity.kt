@@ -3,11 +3,11 @@ package com.android.sustentare
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.android.sustentare.ui.theme.SustentareTheme
 import com.android.sustentare.ui.viewmodel.AuthViewModel
@@ -17,34 +17,15 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
         setContent {
             SustentareTheme {
-                Scaffold(Modifier.fillMaxSize()) { innerPadding ->
-                    // Chamada da função SustentareNavigation
-                    // Adicionada navegação entre telas de autenticação (login) e as telas de tópicos e desafios
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     SustentareNavigation(
-                        Modifier.padding(innerPadding),
+                        modifier = Modifier.padding(innerPadding),
                         authViewModel = authViewModel
                     )
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        authViewModel.checkAuthStatus() // Verifica o estado de autenticação
-    }
-
-    override fun onPause() {
-        super.onPause()
-        authViewModel.startTimeout() // Inicia o timeout quando a Activity sai do primeiro plano
-    }
-
-    override fun onResume() {
-        super.onResume()
-        authViewModel.cancelTimeout() // Cancela o timeout ao retornar para o primeiro plano
     }
 }

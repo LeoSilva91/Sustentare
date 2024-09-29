@@ -85,5 +85,16 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.1")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.4.2")
+    implementation("com.google.firebase:firebase-storage:20.2.1")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("androidx.navigation:navigation-compose:2.7.0")
+    implementation("com.google.firebase:firebase-auth:21.0.3")
+    implementation("com.google.firebase:firebase-firestore:24.0.1")
+    implementation("com.google.firebase:firebase-storage:20.0.1")
+    implementation("androidx.activity:activity-compose:1.4.0")
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
     //fim
 }
