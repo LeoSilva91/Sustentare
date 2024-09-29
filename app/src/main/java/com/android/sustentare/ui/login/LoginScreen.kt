@@ -88,7 +88,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, aut
     }
 
 
-        Box(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(GreenLow)
@@ -217,6 +217,3 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, aut
         }
     }
 }
-
-
-
