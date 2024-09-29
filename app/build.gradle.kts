@@ -96,5 +96,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.1.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+    implementation("androidx.activity:activity-ktx:1.2.3")
     //fim
 }

@@ -21,41 +21,36 @@ import com.android.sustentare.ui.theme.GreenHigh
 @Composable
 fun ListaTopicosScreen(navController: NavController) {
     val firestore = FirebaseFirestore.getInstance()
-    val topicosList = remember { topicos.toMutableStateList() }
+    val topicosList = remember { mutableStateListOf<Topico>() } // lista observável para refletir mudanças em tempo real
     var carregando by remember { mutableStateOf(true) }
     var erroCarregamento by remember { mutableStateOf<String?>(null) }
 
     // Carregar status de conclusão dos tópicos do Firestore ao inicializar a tela
     LaunchedEffect(Unit) {
-        Log.d("Firestore", "Consultando status de conclusão dos tópicos do Firestore...")
+        Log.d("Firestore", "Observando status de conclusão dos tópicos no Firestore...")
 
         firestore.collection("usuarios")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
             .collection("desafios")
-            .get()
-            .addOnSuccessListener { result ->
-                if (result.isEmpty) {
-                    Log.d("Firestore", "Nenhum status de conclusão encontrado na coleção 'desafios'.")
-                } else {
-                    for (document in result) {
-                        val id = document.getLong("id")?.toInt()
-                        val concluido = document.getBoolean("concluido") ?: false
+            .addSnapshotListener { result, exception ->
+                if (exception != null) {
+                    erroCarregamento = exception.message
+                    carregando = false
+                    Log.e("Firestore", "Erro ao carregar status dos tópicos: ", exception)
+                    return@addSnapshotListener
+                }
 
-                        // Atualizar o status do tópico na lista fixa
-                        if (id != null) {
-                            topicosList.find { it.id == id }?.let {
-                                it.concluido = concluido
-                                Log.d("Firestore", "Atualizado tópico ID=$id para concluído=$concluido")
-                            }
-                        }
+                // Atualizar a lista de tópicos quando houver mudanças no Firestore
+                if (result != null) {
+                    topicosList.clear() // Limpar a lista para preencher com dados atualizados
+                    for (topico in topicos) {
+                        // Verificar se o tópico está concluído no Firestore
+                        val documento = result.documents.find { it.getLong("id")?.toInt() == topico.id }
+                        val concluido = documento?.getBoolean("concluido") ?: false
+                        topicosList.add(topico.copy(concluido = concluido))
                     }
                 }
                 carregando = false
-            }
-            .addOnFailureListener { exception ->
-                erroCarregamento = exception.message
-                carregando = false
-                Log.e("Firestore", "Erro ao carregar status dos tópicos: ", exception)
             }
     }
 
@@ -92,22 +87,20 @@ fun ListaTopicosScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
             ) {
-                // Ícone de seta para voltar todo verde com seta branca
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
                         .align(Alignment.CenterStart)
-                        .size(40.dp) // Tamanho da seta
-                        .background(GreenHigh, CircleShape) // Fundo verde para o botão
+                        .size(40.dp)
+                        .background(GreenHigh, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Voltar",
-                        tint = Color.White // Cor da seta branca
+                        tint = Color.White
                     )
                 }
 
-                // Texto "Lista de Tópicos" centralizado e em negrito
                 Text(
                     text = "Lista de Tópicos",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
@@ -123,7 +116,6 @@ fun ListaTopicosScreen(navController: NavController) {
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Botão para cada tópico
                     Button(
                         onClick = {
                             navController.navigate("desafio/${topico.id}/${topico.titulo}")
@@ -137,9 +129,8 @@ fun ListaTopicosScreen(navController: NavController) {
                         )
                     }
 
-                    // Status de "concluído" ao lado do botão
                     if (topico.concluido) {
-                        Spacer(modifier = Modifier.width(8.dp)) // Espaço entre o botão e o ícone de check
+                        Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
                                 .size(24.dp)
