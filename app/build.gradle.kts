@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.database.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,19 +72,34 @@ dependencies {
 
 
     // Firebase Auth
-    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
-    implementation("com.google.firebase:firebase-auth")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.com.google.firebase.firebase.auth)
 
-    implementation("androidx.navigation:navigation-compose:2.8.0")
+    implementation(libs.androidx.navigation.compose)
 
     // ViewModel utilities for Compose and Lifecycle utilities for Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.5")
-    //rochester
-    implementation("androidx.compose.ui:ui:1.5.1")
-    implementation("androidx.compose.material:material:1.5.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.5.1")
-    implementation("androidx.navigation:navigation-compose:2.5.3")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    //fim
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // coil async image - Rochester
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v286)
+    implementation(libs.androidx.activity.ktx)
+
 }
