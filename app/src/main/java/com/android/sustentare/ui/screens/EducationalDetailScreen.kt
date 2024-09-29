@@ -1,4 +1,4 @@
-package com.android.sustentare.ui.screen
+package com.android.sustentare.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.android.sustentare.navigation.SustentareNavigation
 import com.android.sustentare.ui.theme.SustentareTheme
 import com.android.sustentare.ui.viewmodel.AuthViewModel
 
@@ -44,4 +45,5 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         authViewModel.cancelTimeout() // Cancela o timeout ao retornar para o primeiro plano
     }
+
 }

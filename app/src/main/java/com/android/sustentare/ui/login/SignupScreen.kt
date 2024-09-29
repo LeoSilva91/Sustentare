@@ -56,6 +56,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavController, au
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
 
     val authStates = authViewModel.authStates.observeAsState()
     val context = LocalContext.current
@@ -120,6 +121,23 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavController, au
                     .align(Alignment.Start)
                     .offset(x = 55.dp, y = 10.dp)
             )
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Nome", color = Grey60, fontSize = 20.sp, fontFamily = latoFontFamily) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = BlueHigh,
+                    unfocusedBorderColor = GreenHigh,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                ),
+                shape = RoundedCornerShape(50.dp),
+                maxLines = 1,
+                modifier = Modifier.fillMaxWidth(0.8f)
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             OutlinedTextField(
                 value = email,
@@ -195,7 +213,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavController, au
                 }
 
                 Button(onClick = {
-                    authViewModel.checkSignup(email, password, confirmPassword)
+                    authViewModel.checkSignup(email, password, confirmPassword, username)
                 },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenHigh
