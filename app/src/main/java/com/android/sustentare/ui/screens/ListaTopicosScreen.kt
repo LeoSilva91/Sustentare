@@ -14,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.android.sustentare.model.Topico
-import com.android.sustentare.model.topicos
 import com.android.sustentare.navigation.NavigationItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -123,7 +121,7 @@ fun ListaTopicosScreen(navController: NavController,authViewModel: AuthViewModel
                 ) {
                     Button(
                         onClick = {
-                            navController.navigate(NavigationItem.ChallengerDetail.createRoute(topico.id))
+                            navController.navigate(NavigationItem.ChallengerDetail.createRoute(topico.id, topico.titulo))
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = GreenHigh)
@@ -133,7 +131,6 @@ fun ListaTopicosScreen(navController: NavController,authViewModel: AuthViewModel
                             color = Color.White
                         )
                     }
-
                     if (topico.concluido) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(

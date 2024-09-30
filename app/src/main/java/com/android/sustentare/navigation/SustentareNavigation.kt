@@ -62,17 +62,20 @@ fun SustentareNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewM
             Co2EmissionWorkScreen(navController = navController)
         }
         composable(NavigationItem.Profile.route) {
-            ProfileScreen(authViewModel = authViewModel)
+            ProfileScreen(authViewModel = authViewModel,navController = navController)
         }
         composable(NavigationItem.Challenger.route) {
             ListaTopicosScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(
             route = NavigationItem.ChallengerDetail.route,
-            arguments = listOf(navArgument("topicoId") { type = NavType.IntType })
+            arguments = listOf(
+                navArgument("topicoId") { type = NavType.IntType },
+                navArgument("topicoTitulo") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val topicoId = backStackEntry.arguments?.getInt("topicoId") ?: return@composable
-            val topicoTitulo = "Título Exemplo" // Obtenha o título conforme necessário
+            val topicoTitulo = backStackEntry.arguments?.getString("topicoTitulo") ?: ""
 
             DesafioScreen(
                 navController = navController,

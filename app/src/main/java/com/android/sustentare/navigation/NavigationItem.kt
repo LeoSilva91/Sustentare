@@ -14,7 +14,7 @@ sealed class NavigationItem(val route: String) {
             fun createRoute(contentLink: String) = "educational_detail/$contentLink"
         }
     }
-    object ChallengerDetail : NavigationItem("challenger_detail/{topicoId}") {
-        fun createRoute(topicoId: Int) = "challenger_detail/$topicoId"
+    object ChallengerDetail : NavigationItem("challenger_detail/{topicoId}/{topicoTitulo}") {
+        fun createRoute(topicoId: Int, topicoTitulo: String) = "challenger_detail/$topicoId/$topicoTitulo"
     }
 }

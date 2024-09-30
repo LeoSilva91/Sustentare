@@ -1,4 +1,4 @@
-package com.android.sustentare.model
+package com.android.sustentare.ui.screens
 
 data class Topico(
     val id: Int = 0,

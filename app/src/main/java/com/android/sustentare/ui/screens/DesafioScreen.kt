@@ -25,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.android.sustentare.ui.theme.GreenHigh
 import com.android.sustentare.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
+import com.android.sustentare.navigation.NavigationItem
 
 @Composable
 fun DesafioScreen(
@@ -171,7 +172,7 @@ fun DesafioScreen(
             )
         }
 
-        // Botão "Salvar" - só habilitado se o campo de descrição não estiver vazio
+// Botão "Salvar" - só habilitado se o campo de descrição não estiver vazio e houver uma mídia anexada
         Button(
             onClick = {
                 coroutineScope.launch {
@@ -215,28 +216,6 @@ fun DesafioScreen(
                                     erroCarregamento = "Erro ao fazer upload da mídia: ${exception.message}"
                                     Log.e("FirebaseStorage", "Erro ao fazer upload: ${exception.message}")
                                 }
-                        } ?: run {
-                            // Se não houver mídia nova, apenas salvar a descrição
-                            firestore.collection("usuarios").document(userId).collection("desafios")
-                                .document(topicoId.toString())
-                                .set(
-                                    mapOf(
-                                        "id" to topicoId,
-                                        "titulo" to topicoTitulo,
-                                        "descricao" to descricao,
-                                        "concluido" to true,
-                                        "usuarioId" to userId,
-                                        "mediaUrl" to (mediaUrl ?: "")
-                                    )
-                                )
-                                .addOnSuccessListener {
-                                    erroCarregamento = null
-                                    concluido = true
-                                    navController.popBackStack() // Voltar para a lista de tópicos
-                                }
-                                .addOnFailureListener { exception ->
-                                    erroCarregamento = "Erro ao salvar: ${exception.message}"
-                                }
                         }
                     } ?: run {
                         erroCarregamento = "Usuário não autenticado."
@@ -248,16 +227,16 @@ fun DesafioScreen(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = GreenHigh),
-            enabled = descricao.isNotBlank()
+            enabled = descricao.isNotBlank() && mediaUri != null // Habilitar botão somente se descrição e mídia estiverem presentes
         ) {
             Text("Salvar", color = Color.White)
         }
 
-        // Botão "Deletar Resposta" - atualizado para também deletar a mídia
+
+// Botão "Deletar Resposta" - atualizado para também deletar a mídia e redirecionar corretamente
         Button(
             onClick = {
                 coroutineScope.launch {
-                    val userId = uid
                     uid?.let { userId ->
                         // Primeiro, deletar a mídia do Storage, se existir
                         mediaUrl?.let { url ->
@@ -271,22 +250,20 @@ fun DesafioScreen(
                                 }
                         }
 
+                        // Depois, deletar o documento do Firestore
                         firestore.collection("usuarios").document(userId).collection("desafios")
                             .document(topicoId.toString())
-                            .get()
-                            .addOnSuccessListener { document ->
-                                if (document.exists()) {
-                                    // Agora pode deletar
-                                    document.reference.delete()
-                                        .addOnSuccessListener {
-                                            Log.d("DeleteChallenge", "Desafio deletado com sucesso.")
-                                        }
-                                        .addOnFailureListener { exception ->
-                                            Log.e("FirebaseFirestore", "Erro ao deletar no Firestore: ${exception.message}")
-                                        }
-                                } else {
-                                    Log.e("DeleteChallenge", "Desafio não encontrado.")
+                            .delete()
+                            .addOnSuccessListener {
+                                Log.d("FirebaseFirestore", "Desafio deletado com sucesso.")
+                                // Navegar de volta para a lista de tópicos de forma mais explícita
+                                navController.navigate(NavigationItem.Challenger.route) {
+                                    popUpTo(NavigationItem.Challenger.route) { inclusive = true }
                                 }
+                            }
+                            .addOnFailureListener { exception ->
+                                erroCarregamento = "Erro ao deletar: ${exception.message}"
+                                Log.e("FirebaseFirestore", "Erro ao deletar no Firestore: ${exception.message}")
                             }
                     }
                 }
@@ -299,6 +276,7 @@ fun DesafioScreen(
         ) {
             Text("Deletar Resposta", color = Color.White)
         }
+
 
         // Mostrar erro se houver problema ao salvar, deletar ou carregar
         if (erroCarregamento != null) {
