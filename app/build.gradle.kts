@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -61,10 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.androidx.espresso.core)
-    implementation(libs.androidx.espresso.core)
-    implementation(libs.play.services.location)
+    implementation(libs.firebase.database.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,8 +73,7 @@ dependencies {
 
     // Firebase Auth
     implementation(platform(libs.firebase.bom))
-    implementation(libs.google.firebase.auth)
-    implementation("com.google.firebase:firebase-database-ktx:20.2.3")
+    implementation(libs.com.google.firebase.firebase.auth)
 
     implementation(libs.androidx.navigation.compose)
 
@@ -85,5 +81,26 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
+    // coil async image - Rochester
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v286)
+    implementation(libs.androidx.activity.ktx)
+    implementation("androidx.compose.material:material-icons-extended:")
 
 }

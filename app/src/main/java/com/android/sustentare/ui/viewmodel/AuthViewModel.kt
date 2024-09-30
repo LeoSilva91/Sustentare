@@ -135,7 +135,7 @@ class AuthViewModel : ViewModel() {
         timeoutRunnable = Runnable {
             checkLogout()
         }
-        handler.postDelayed(timeoutRunnable!!, 10000)
+        handler.postDelayed(timeoutRunnable!!, 90000)
         isTimeoutActive = true
     }
 

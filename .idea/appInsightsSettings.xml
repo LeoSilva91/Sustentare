@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AppInsightsSettings">
+    <option name="selectedTabId" value="Firebase Crashlytics" />
     <option name="tabSettings">
       <map>
         <entry key="Firebase Crashlytics">
@@ -13,6 +14,12 @@
                   <option name="projectId" value="sustaingreen-62e9e" />
                   <option name="projectNumber" value="1020064373560" />
                 </ConnectionSetting>
+              </option>
+              <option name="failureTypes">
+                <list>
+                  <option value="ANR" />
+                  <option value="NON_FATAL" />
+                </list>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
               <option name="timeIntervalDays" value="THIRTY_DAYS" />

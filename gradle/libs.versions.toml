@@ -1,7 +1,12 @@
 [versions]
+activityKtx = "1.9.2"
 agp = "8.6.1"
+coilBom = "2.4.0"
+coilCompose = "2.2.2"
 converterGson = "2.9.0"
 firebaseBom = "33.3.0"
+firebaseFirestore = "25.1.0"
+firebaseStorage = "21.0.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -13,19 +18,35 @@ activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
+lifecycleRuntimeKtxVersion = "2.8.6"
+material = "1.7.2"
 navigationCompose = "2.8.1"
+okhttp = "4.11.0"
 retrofit = "2.9.0"
 runtimeLivedata = "1.7.2"
 firebaseFirestoreKtx = "25.1.0"
 playServicesLocation = "21.3.0"
+ui = "1.7.2"
+uiToolingPreview = "1.7.2"
+firebaseDatabaseKtx = "21.0.0"
 
 [libraries]
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
+androidx-lifecycle-runtime-ktx-v286 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeCompose" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeCompose" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+coil = { module = "io.coil-kt:coil" }
+coil-bom = { module = "io.coil-kt:coil-bom", version.ref = "coilBom" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+com-google-firebase-firebase-auth = { module = "com.google.firebase:firebase-auth" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 google-firebase-auth = { module = "com.google.firebase:firebase-auth" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -43,8 +64,12 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
